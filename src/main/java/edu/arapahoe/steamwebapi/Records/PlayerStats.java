@@ -8,4 +8,6 @@ public record PlayerStats(
         String gameName,
         List<StatEntry> stats,
         List<AchievementEntry> achievements
-) {}
+) {
+
+}

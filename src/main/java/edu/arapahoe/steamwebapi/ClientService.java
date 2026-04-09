@@ -3,19 +3,22 @@ package edu.arapahoe.steamwebapi;
 import edu.arapahoe.steamwebapi.Records.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import edu.arapahoe.steamwebapi.entity.GamePlayerCount;
+import edu.arapahoe.steamwebapi.repository.GamePlayerCountRepository;
+import java.time.LocalDateTime;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 @Service
 public class ClientService {
+    // the repository is used to save the player count -- Matt
+    private final GamePlayerCountRepository repository;
 
     // the rest client is created so we can use it to make requests -- Claire
     private final RestClient restClient;
-
-    public ClientService(RestClient restClient) {
+    // the constructor is used to inject the rest client and the repository -- Matt
+    public ClientService(RestClient restClient, GamePlayerCountRepository repository) {
         this.restClient = restClient;
+        this.repository = repository;
     }
 
     // sends a request to this link -- Claire
@@ -44,5 +47,24 @@ public class ClientService {
                 .retrieve()
                 .body(SteamGameStats.class);
     }
+    // records the player count for a game -- Matt
+    public void recordPlayerCount(String appId) {
+        try {
+            SteamGameStats stats = getGameStats(appId);
 
+            if (stats == null || stats.response() == null) return;
+
+            int count = stats.response().player_count();
+
+            GamePlayerCount record = new GamePlayerCount();
+            record.setAppId(Integer.parseInt(appId));
+            record.setPlayerCount(count);
+            record.setRecordedAt(LocalDateTime.now());
+
+            repository.save(record);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
