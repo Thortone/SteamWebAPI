@@ -19,4 +19,5 @@ public class ClientConfig {
                 .baseUrl("http://api.steampowered.com")
                 .build();
     }
+
 }
