@@ -1,6 +1,7 @@
-package edu.arapahoe.steamwebapi.scheduler;
+package edu.arapahoe.steamwebapi.Scheduler;
 
 import edu.arapahoe.steamwebapi.ClientService;
+import edu.arapahoe.steamwebapi.GameEntryRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -12,16 +13,20 @@ public class PlayerCountScheduler {
     // the client service is used to make requests to the steam api -- Matt
     private final ClientService clientService;
     // the list of tracked games (use game IDs)-- Matt
-    private final List<String> trackedGames = List.of("730", "570");
+    private final List<Integer> trackedGames = List.of(730, 570);
+
+    private final GameEntryRepository gameEntryRepository;
+
     // the constructor is used to inject the client service -- Matt
-    public PlayerCountScheduler(ClientService clientService) {
+    public PlayerCountScheduler(ClientService clientService, GameEntryRepository gameEntryRepository) {
         this.clientService = clientService;
+        this.gameEntryRepository = gameEntryRepository;
     }
     // runs every 5 minutes (adjustable)-- Matt
     @Scheduled(fixedRate = 300000)
     public void trackPlayerCounts() {
-        for (String appId : trackedGames) {
-            clientService.recordPlayerCount(appId);
+        for (Integer appId : trackedGames) {
+            gameEntryRepository.save(clientService.recordPlayerCount(appId, gameEntryRepository.count()));
         }
     }
 }
