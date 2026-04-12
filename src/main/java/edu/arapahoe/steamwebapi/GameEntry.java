@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+
+// getters and setters for the entity instances in the database -- Claire
+
 @Entity
 @Table(name = "game_entries")
 public class GameEntry {

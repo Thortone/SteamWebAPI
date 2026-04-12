@@ -13,7 +13,14 @@ public class PlayerCountScheduler {
     // the client service is used to make requests to the steam api -- Matt
     private final ClientService clientService;
     // the list of tracked games (use game IDs)-- Matt
-    private final List<Integer> trackedGames = List.of(730, 570);
+
+    //    730 = Counter-Strike: Global Offensive
+    //    570 = Dota 2
+    //    8930 = Civilization V
+    //    413150 = Stardew Valley
+    //    1424330 = Wobbledogs
+
+    private final List<Integer> trackedGames = List.of(730, 570, 8930, 413150, 1424330);
 
     private final GameEntryRepository gameEntryRepository;
 

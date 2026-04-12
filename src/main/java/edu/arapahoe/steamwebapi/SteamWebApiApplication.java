@@ -1,6 +1,8 @@
 package edu.arapahoe.steamwebapi;
 
 import org.springframework.boot.SpringApplication;
+
+// allows scheduling of tasks -- Matt
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 

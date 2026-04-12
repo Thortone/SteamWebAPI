@@ -13,6 +13,7 @@ public class ClientConfig {
     }
 
     // specifies the base url for the rest client -- Claire
+    // this can be overwritten in the client service if you want to call a different url -- Claire
     @Bean
     public RestClient restClient(RestClient.Builder builder) {
         return builder
