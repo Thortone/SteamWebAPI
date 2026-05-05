@@ -1,5 +1,6 @@
 package edu.arapahoe.steamwebapi.Scheduler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.arapahoe.steamwebapi.ClientService;
 import edu.arapahoe.steamwebapi.GameEntryRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,8 +20,9 @@ public class PlayerCountScheduler {
     //    8930 = Civilization V
     //    413150 = Stardew Valley
     //    1424330 = Wobbledogs
+    //    205100 = Dishonored
 
-    private final List<Integer> trackedGames = List.of(730, 570, 8930, 413150, 1424330);
+    private final List<Integer> trackedGames = List.of(730, 570, 8930, 413150, 1424330, 205100);
 
     private final GameEntryRepository gameEntryRepository;
 
@@ -31,7 +33,7 @@ public class PlayerCountScheduler {
     }
     // runs every 5 minutes (adjustable)-- Matt
     @Scheduled(fixedRate = 300000)
-    public void trackPlayerCounts() {
+    public void trackPlayerCounts() throws JsonProcessingException {
         for (Integer appId : trackedGames) {
             gameEntryRepository.save(clientService.recordPlayerCount(appId, gameEntryRepository.count()));
         }

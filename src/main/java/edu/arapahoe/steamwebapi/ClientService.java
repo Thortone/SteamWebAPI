@@ -1,11 +1,15 @@
 package edu.arapahoe.steamwebapi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.arapahoe.steamwebapi.Records.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+//import tools.jackson.databind.JsonNode;
+//import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,7 +56,7 @@ public class ClientService {
     // sends a request to this link -- Claire
     // takes in an appId and returns the game name -- Claire
     // https://store.steampowered.com/api/appdetails?appids=appId
-    public String getGameName(String appId) {
+    public String getGameName(String appId) throws JsonProcessingException {
 
         // this object mapper is used to parse the json response from the steam api -- Claire
         // gathering this result as a JSON node object is easier in this case because there is a gargantuan amount of data retrieved in this request -- Claire
@@ -68,11 +72,11 @@ public class ClientService {
                 .retrieve()
                 .body(String.class));
 
-        return root.get(appId).get("data").get("name").asString();
+        return root.get(appId).get("data").get("name").toString();
     }
 
     // when this method is called, it will use a provided appId and entryId to create a new GameEntry that is returned -- Claire
-    public GameEntry recordPlayerCount(int appId, long entryId) {
+    public GameEntry recordPlayerCount(int appId, long entryId) throws JsonProcessingException {
 
         SteamGameStats currentGameStats = getGameStats(appId);
         String gameName = getGameName(String.valueOf(appId));

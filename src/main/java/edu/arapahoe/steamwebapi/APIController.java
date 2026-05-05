@@ -1,13 +1,12 @@
 package edu.arapahoe.steamwebapi;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.arapahoe.steamwebapi.Records.*;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Scanner;
+
 
 @RestController
 @RequestMapping("/api")
@@ -16,10 +15,12 @@ public class APIController {
     // a client service object and gameEntryRepository object are created here so their methods can be called -- Claire
     private final ClientService ClientService;
     private final GameEntryRepository gameEntryRepository;
+    private final SteamGameService steamGameService;
 
-    public APIController(ClientService clientService, GameEntryRepository gameEntryRepository) {
+    public APIController(ClientService clientService, GameEntryRepository gameEntryRepository, SteamGameService steamGameService) {
         this.ClientService = clientService;
         this.gameEntryRepository = gameEntryRepository;
+        this.steamGameService = steamGameService;
     }
 
 //    // takes in appId and steamId and returns that players stats/achievements for said game -- Claire
@@ -29,6 +30,17 @@ public class APIController {
 //
 //        return ClientService.getUserStats(appId, steamId, apiKey);
 //    }
+
+    // asking ai questions
+    @PostMapping(path = "/ask/{appId}", produces = "application/json")
+    public Answer ask(@RequestBody @Valid String question, @PathVariable int appId) throws JsonProcessingException {
+
+        List<GameEntryInfo> gameEntries = gameEntryRepository.findByAppIdOrderByTimestampDesc(appId);
+        String gameName = ClientService.getGameName(String.valueOf(appId));
+        Question newQuestion = new Question(gameName, gameEntries, question);
+
+        return steamGameService.askQuestion(newQuestion);
+    }
 
 
     // takes in appId and returns a gamestats object containing the number of players currently playing that game
@@ -45,7 +57,7 @@ public class APIController {
 
     // does the same thing as getGameHistory, but also records the current player count for the game
     @GetMapping("/games/{appid}/record")
-    public List<GameEntryInfo> recordNow(@PathVariable int appid) {
+    public List<GameEntryInfo> recordNow(@PathVariable int appid) throws JsonProcessingException {
 
         // game entry is created and saved to the database
         gameEntryRepository.save(ClientService.recordPlayerCount(appid, gameEntryRepository.count()));
@@ -56,7 +68,7 @@ public class APIController {
 
     // somewhat vestigial but this is useful if you just want the game name for a given app id
     @GetMapping("/gameName/{appId}")
-    String getGameName(@PathVariable String appId) {
+    String getGameName(@PathVariable String appId) throws JsonProcessingException {
         return ClientService.getGameName(appId);
     }
 }
