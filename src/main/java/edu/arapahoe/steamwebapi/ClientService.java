@@ -2,6 +2,7 @@ package edu.arapahoe.steamwebapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.arapahoe.steamwebapi.Records.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -21,7 +22,8 @@ public class ClientService {
     // the rest client is created so we can use it to make requests -- Claire
     private final RestClient restClient;
 
-    public ClientService(RestClient restClient) {
+    // this was changed to add the @Qualifier annnotation and it specifies which restClient it should be using
+    public ClientService(@Qualifier("steamRestClient") RestClient restClient) {
         this.restClient = restClient;
     }
 

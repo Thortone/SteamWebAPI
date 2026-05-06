@@ -3,6 +3,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.arapahoe.steamwebapi.Records.*;
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,12 +32,18 @@ public class APIController {
 //        return ClientService.getUserStats(appId, steamId, apiKey);
 //    }
 
-    // asking ai questions
+    // Asking Questions to ollama AI
+    // this post request takes in a question as a string in the body, and an appId in the path.
     @PostMapping(path = "/ask/{appId}", produces = "application/json")
     public Answer ask(@RequestBody @Valid String question, @PathVariable int appId) throws JsonProcessingException {
 
+        // grabs all game entries for the appId provided in the path
         List<GameEntryInfo> gameEntries = gameEntryRepository.findByAppIdOrderByTimestampDesc(appId);
+
+        // grabs the game name for the appId
         String gameName = ClientService.getGameName(String.valueOf(appId));
+
+        // uses all this information to create a new question object
         Question newQuestion = new Question(gameName, gameEntries, question);
 
         return steamGameService.askQuestion(newQuestion);
